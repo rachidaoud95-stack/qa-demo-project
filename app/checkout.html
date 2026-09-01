@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>QA Demo Shop — Paiement</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <a href="inventory.html">QA Demo Shop</a>
+    <a class="shopping_cart_link" href="cart.html">
+      Panier
+      <span class="shopping_cart_badge" style="display:none;"></span>
+    </a>
+  </header>
+  <div class="container">
+
+    <div id="step-one">
+      <h2>Informations de livraison</h2>
+      <div id="error-slot"></div>
+      <label for="first-name">Prénom</label>
+      <input id="first-name" />
+      <label for="last-name">Nom</label>
+      <input id="last-name" />
+      <label for="postal-code">Code postal</label>
+      <input id="postal-code" />
+      <button class="btn" data-test="continue" id="continue-btn">Continuer</button>
+    </div>
+
+    <div id="step-two" style="display:none;">
+      <h2>Récapitulatif</h2>
+      <div id="summary-list"></div>
+      <div class="summary_total_label" id="summary-total"></div>
+      <button class="btn" data-test="finish" id="finish-btn">Finish</button>
+    </div>
+
+    <div id="step-complete" style="display:none;">
+      <div class="complete-header">Thank you for your order!</div>
+    </div>
+
+  </div>
+  <script src="data.js"></script>
+  <script>
+    requireAuth();
+    renderCartBadge();
+
+    const cartIds = getCart();
+    const items = cartIds.map((id) => PRODUCTS.find((p) => p.id === id)).filter(Boolean);
+    const total = items.reduce((sum, p) => sum + p.price, 0);
+
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      const first = document.getElementById('first-name').value.trim();
+      const last = document.getElementById('last-name').value.trim();
+      const postal = document.getElementById('postal-code').value.trim();
+      const errorSlot = document.getElementById('error-slot');
+      errorSlot.innerHTML = '';
+
+      if (!first || !last || !postal) {
+        errorSlot.innerHTML = '<div data-test="error">Error: First Name, Last Name and Postal Code are required.</div>';
+        return;
+      }
+
+      const summaryList = document.getElementById('summary-list');
+      summaryList.innerHTML = '';
+      items.forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'cart_item';
+        el.innerHTML = `<span>${p.name}</span><span>$${p.price.toFixed(2)}</span>`;
+        summaryList.appendChild(el);
+      });
+      document.getElementById('summary-total').textContent = `Total: $${total.toFixed(2)}`;
+
+      document.getElementById('step-one').style.display = 'none';
+      document.getElementById('step-two').style.display = 'block';
+    });
+
+    document.getElementById('finish-btn').addEventListener('click', () => {
+      setCart([]);
+      document.getElementById('step-two').style.display = 'none';
+      document.getElementById('step-complete').style.display = 'block';
+    });
+  </script>
+</body>
+</html>
