@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>QA Demo Shop — Panier</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <a href="inventory.html">QA Demo Shop</a>
+    <a class="shopping_cart_link" href="cart.html">
+      Panier
+      <span class="shopping_cart_badge" style="display:none;"></span>
+    </a>
+  </header>
+  <div class="container">
+    <h2>Votre panier</h2>
+    <div id="cart-list"></div>
+    <button class="btn" data-test="checkout" id="checkout-btn">Checkout</button>
+  </div>
+  <script src="data.js"></script>
+  <script>
+    requireAuth();
+    renderCartBadge();
+
+    const cartIds = getCart();
+    const items = cartIds.map((id) => PRODUCTS.find((p) => p.id === id)).filter(Boolean);
+    const list = document.getElementById('cart-list');
+    if (items.length === 0) {
+      list.innerHTML = '<p>Votre panier est vide.</p>';
+    } else {
+      items.forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'cart_item';
+        el.innerHTML = `<span>${p.name}</span><span>$${p.price.toFixed(2)}</span>`;
+        list.appendChild(el);
+      });
+    }
+
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      window.location.href = 'checkout.html';
+    });
+  </script>
+</body>
+</html>
+
