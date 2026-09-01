@@ -1,0 +1,15 @@
+{
+  "name": "qa-demo-project",
+  "version": "1.0.0",
+  "description": "Suite de tests automatisés de démonstration — parcours critiques d'une boutique en ligne (auth, panier, paiement, tri) avec pipeline CI/CD.",
+  "scripts": {
+    "test": "playwright test",
+    "report": "playwright show-report"
+  },
+  "keywords": ["qa", "automation", "playwright", "testing"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}
