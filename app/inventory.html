@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<title>QA Demo Shop — Catalogue</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <a href="inventory.html">QA Demo Shop</a>
+    <a class="shopping_cart_link" href="cart.html">
+      Panier
+      <span class="shopping_cart_badge" style="display:none;"></span>
+    </a>
+  </header>
+  <div class="container">
+    <div class="sort-row">
+      <select data-test="product-sort-container" id="sort">
+        <option value="az">Nom (A à Z)</option>
+        <option value="za">Nom (Z à A)</option>
+        <option value="lohi">Prix (croissant)</option>
+        <option value="hilo">Prix (décroissant)</option>
+      </select>
+    </div>
+    <div class="inventory_list" id="list"></div>
+  </div>
+  <script src="data.js"></script>
+  <script>
+    requireAuth();
+    renderCartBadge();
+
+    function render(items) {
+      const list = document.getElementById('list');
+      list.innerHTML = '';
+      items.forEach((p) => {
+        const el = document.createElement('div');
+        el.className = 'inventory_item';
+        el.innerHTML = `
+          <span>${p.name}</span>
+          <span>
+            <span class="inventory_item_price">$${p.price.toFixed(2)}</span>
+            <button type="button" data-id="${p.id}">Add to cart</button>
+          </span>
+        `;
+        list.appendChild(el);
+      });
+      list.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cart = getCart();
+          cart.push(btn.dataset.id);
+          setCart(cart);
+          renderCartBadge();
+        });
+      });
+    }
+
+    function sortItems(mode) {
+      const items = [...PRODUCTS];
+      if (mode === 'az') items.sort((a, b) => a.name.localeCompare(b.name));
+      if (mode === 'za') items.sort((a, b) => b.name.localeCompare(a.name));
+      if (mode === 'lohi') items.sort((a, b) => a.price - b.price);
+      if (mode === 'hilo') items.sort((a, b) => b.price - a.price);
+      render(items);
+    }
+
+    document.getElementById('sort').addEventListener('change', (e) => sortItems(e.target.value));
+    sortItems('az');
+  </script>
+</body>
+</html>
